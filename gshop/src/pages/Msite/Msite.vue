@@ -1,7 +1,8 @@
 <template>
   <div class="msite">
+
     <!-- 首页头部 -->
-    <HeaderTop title=" 昌平区北七家宏福科技园(337  省道北)">
+    <HeaderTop :title="address.name">
       <router-link slot="search" to="/search" class="header_search">
         <i class="iconfont icon-sousuo"></i>
       </router-link>
@@ -9,115 +10,26 @@
         <span class="header_login_text">登录|注册</span>
       </router-link>
     </HeaderTop>
+
     <!-- 首页导航 -->
     <nav class="msite_nav border-1px">
-      <div class="swiper-container">
+      <div class="swiper-container" v-if="categorysArr.length>0">
         <div class="swiper-wrapper">
-          <div class="swiper-slide">
-            <a href="javascript:" class="link_to_food">
+          <div class="swiper-slide" v-for="(cs, index) in categorysArr" :key="index">
+            <a href="javascript:" class="link_to_food" v-for="(c, index2) in cs" :key="index2">
               <div class="food_container">
-                <img alt='' src="./images/nav/1.jpg">
+                <img :src="imgBaseUrl+c.image_url">
               </div>
-              <span>甜品饮品</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img alt='' src="./images/nav/2.jpg">
-              </div>
-              <span>商超便利</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img alt='' src="./images/nav/3.jpg">
-              </div>
-              <span>美食</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img alt='' src="./images/nav/4.jpg">
-              </div>
-              <span>简餐</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img alt='' src="./images/nav/5.jpg">
-              </div>
-              <span>新店特惠</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img alt='' src="./images/nav/6.jpg">
-              </div>
-              <span>准时达</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img alt='' src="./images/nav/7.jpg">
-              </div>
-              <span>预订早餐</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img alt='' src="./images/nav/8.jpg">
-              </div>
-              <span>土豪推荐</span>
-            </a>
-          </div>
-          <div class="swiper-slide">
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img alt='' src="./images/nav/9.jpg">
-              </div>
-              <span>甜品饮品</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img alt='' src="./images/nav/10.jpg">
-              </div>
-              <span>商超便利</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img alt='' src="./images/nav/11.jpg">
-              </div>
-              <span>美食</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img alt='' src="./images/nav/12.jpg">
-              </div>
-              <span>简餐</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img alt='' src="./images/nav/13.jpg">
-              </div>
-              <span>新店特惠</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img alt='' src="./images/nav/14.jpg">
-              </div>
-              <span>准时达</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img alt='' src="./images/nav/1.jpg">
-              </div>
-              <span>预订早餐</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img alt='' src="./images/nav/2.jpg">
-              </div>
-              <span>土豪推荐</span>
+              <span>{{c.title}}</span>
             </a>
           </div>
         </div>
         <!-- Add Pagination -->
         <div class="swiper-pagination"></div>
       </div>
+      <img src="./images/msite_back.svg" v-else>
     </nav>
+
     <!-- 首页附近商家 -->
     <div class="msite_shop_list border-1px">
       <div class="shop_header">
@@ -129,20 +41,87 @@
   </div>
 </template>
 <script>
+    import {mapState} from 'vuex'
     import Swiper from 'swiper';
     import '../../../node_modules/swiper/css/swiper.min.css';
 
     import HeaderTop from '../../components/HeaderTop/HeaderTop.vue';
     import ShopList from '../../components/ShopList/ShopList.vue';
 
+    // import './BaiduAPI.js';
+
     export default {
-        mounted () {
+        data() {
+            return {
+                imgBaseUrl: 'https://fuss10.elemecdn.com'
+            }
+        },
+
+        mounted() {
+
+            this.$store.dispatch('getAddress');
+            this.$store.dispatch('getCategorys');
+            this.$store.dispatch('getShops');
+
+            this.$store.dispatch('changeLocation');
+
+            //创建一个Swiper
             new Swiper('.swiper-container', {
                 pagination: {
                     el: '.swiper-pagination',
                 },
                 loop: false
-            })
+            });
+        },
+
+        updated() {
+            // console.log(window.Blongitude);
+            // this.$store.dispatch('changeLocation', {
+            //     longitude: window.Blongitude,
+            //     latitude: window.Blatitude
+            // });
+            // this.$store.dispatch('getAddress');
+        },
+
+        computed: {
+            ...mapState(['address', 'categorys','latitude']),
+
+            //将获得的食品分类划分为食品大小数组
+            categorysArr() {
+                const max = 8;
+                const arr = [];
+                const {categorys} = this;
+                let smallArr = [];
+                categorys.forEach((c, index) => {
+                    if (smallArr.length === 0) {
+                        arr.push(smallArr)
+                    }
+                    smallArr.push(c);
+                    if (smallArr.length === max) {
+                        smallArr = []
+                    }
+                });
+                return arr
+            }
+        },
+        watch: {
+
+            //当食品大小数组变化后创建新的Swiper
+            categorys(value) {
+                this.$nextTick(() => {
+                    new Swiper('.swiper-container', {
+                        pagination: {
+                            el: '.swiper-pagination',
+                        },
+                        loop: false
+                    })
+                })
+            },
+
+            //当经纬度的数据拿到时
+            latitude(value) {
+                this.$store.dispatch('getAddress');
+            }
         },
         components: {
             HeaderTop,
@@ -154,6 +133,7 @@
   @import "../../common/stylus/mixins.styl"
   .msite
     width 100%
+
     .header
       background-color #02a774
       position fixed
@@ -162,6 +142,7 @@
       top 0
       width 100%
       height 45px
+
       .header_search
         position absolute
         left 15px
@@ -169,9 +150,11 @@
         transform translateY(-50%)
         width 10%
         height 50%
+
         .icon-sousuo
           font-size 25px
           color #fff
+
       .header_title
         position absolute
         top 50%
@@ -180,10 +163,12 @@
         width 50%
         color #fff
         text-align center
+
         .header_title_text
           font-size 20px
           color #fff
           display block
+
       .header_login
         font-size 14px
         color #fff
@@ -191,19 +176,24 @@
         right 15px
         top 50%
         transform translateY(-50%)
+
         .header_login_text
           color #fff
+
     .msite_nav
       bottom-border-1px(#e4e4e4)
       margin-top 45px
       height 200px
       background #fff
+
       .swiper-container
         width 100%
         height 100%
+
         .swiper-wrapper
           width 100%
           height 100%
+
           .swiper-slide
           display flex
           justify-content center
@@ -212,34 +202,42 @@
           .link_to_food
             width 24%
             display inline-block
+
             .food_container
               display block
               width 100%
               text-align center
               padding-bottom 10px
               font-size 0
+
               img
                 display inline-block
                 width 50px
                 height 50px
+
             span
               display block
               width 100%
               text-align center
               font-size 13px
               color #666
+
       .swiper-pagination
-        >span.swiper-pagination-bullet-active
+        > span.swiper-pagination-bullet-active
           background #02a774
+
   .msite_shop_list
     top-border-1px(#e4e4e4)
     margin-top 10px
     background #fff
+
     .shop_header
-     padding 10px 10px 0 10px
+      padding 10px 10px 0 10px
+
     .shop_icon
       margin-left 5px
       color #999
+
     .shop_header_title
       color #999
       font-size 14px

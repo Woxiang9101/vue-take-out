@@ -10,6 +10,13 @@
     import FooterGuide from './components/FooterGuide/FooterGuide.vue'
 
     export default {
+
+        created () {
+            // 异步获取 address
+            // this.$store.dispatch('getAddress')
+
+        },
+
         components: {
             FooterGuide
         }

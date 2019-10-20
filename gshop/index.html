@@ -26,6 +26,34 @@
       }
   </script>
 
+  <!--  //百度地图API-->
+  <script type="text/javascript">
+      function initialize() {
+          let geolocation = new BMap.Geolocation();
+          geolocation.getCurrentPosition(function(r){
+              if(this.getStatus() == BMAP_STATUS_SUCCESS){
+                  // alert('您的位置：'+r.point.lng+','+r.point.lat);
+                  window.Blongitude = r.point.lng;
+                  window.Blatitude = r.point.lat;
+                  console.log('HTML的输出 : ' + window.Blongitude);
+              }
+              else {
+                  alert('failed'+this.getStatus());
+              }
+          });
+      }
+
+      function loadScript() {
+          var script = document.createElement("script");
+          script.src = "http://api.map.baidu.com/api?v=2.0&ak=HLCxKvkcZH2SDhZUWrMBfc2WighTIxaQ&callback=initialize";
+          document.body.appendChild(script);
+      }
+      window.onload = loadScript;
+  </script>
+
+
+
+
 </head>
 <body>
 <div id="app"></div>
